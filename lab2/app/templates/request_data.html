@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Данные запроса</h3>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <h5>URL:</h5>
+        {{data.url}}
+       <h5>Параметры URL:</h5>
+        <ul>
+            {% for k, v in data.args %}
+            <li>
+                <b>{{ k }}:</b> {{ v | join(', ') }}
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <h5>Заголовки:</h5>
+        <ul>{% for k, v in data.headers.items() %}<li><b>{{ k }}:</b> {{ v }}</li>{% endfor %}</ul>
+        
+        <h5>Cookie:</h5>
+        <ul>{% for k, v in data.cookies.items() %}<li><b>{{ k }}:</b> {{ v }}</li>{% endfor %}</ul>
+    </div>
+    
+    <div class="col-md-6">
+        <h5>Форма авторизации:</h5>
+        <form method="POST" class="border p-3 rounded">
+            <div class="mb-2">
+                <input type="text" name="username" class="form-control" placeholder="Логин" required>
+            </div>
+            <div class="mb-2">
+                <input type="password" name="password" class="form-control" placeholder="Пароль" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Войти</button>
+        </form>
+
+        {% if data.auth_data %}
+        <div class="alert alert-info mt-3">
+            <h6>Введенные данные:</h6>
+            Логин: {{ data.auth_data.username }}<br>
+            Пароль: {{ data.auth_data.password }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
