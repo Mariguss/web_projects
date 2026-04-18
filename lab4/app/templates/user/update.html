@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% from "_form_macro.html" import render_user_form %}
+{% block content %}
+    <h1>Редактирование пользователя</h1>
+    {{ render_user_form(url_for('user_update', id=user.id), roles, errors, form_data, is_update=True) }}
+{% endblock %}

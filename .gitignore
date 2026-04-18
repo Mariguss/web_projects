@@ -1,0 +1,10 @@
+lab2webflask
+lab2webflask/
+venv
+venv/
+flask_session
+flask_session/
+instance
+instance/
+__pycache__
+__pycache__/

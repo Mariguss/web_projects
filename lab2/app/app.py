@@ -1,11 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 import re
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # Устанавливаем cookie при заходе на главную
+    response = make_response(render_template('index.html'))
+    response.set_cookie('my_cookie', 'hello_from_flask')
+    return response
 
 @app.route('/request-data', methods=['GET', 'POST'])
 def request_data():

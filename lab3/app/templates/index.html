@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Лабораторная работа №3</h1>
+    {% if not current_user.is_authenticated %}
+        <div class="alert alert-info">
+            <h4>Тестовые данные для входа:</h4>
+            <p><strong>Логин:</strong> user<br>
+            <strong>Пароль:</strong> qwerty</p>
+            <a href="{{ url_for('auth') }}" class="btn btn-primary">Войти</a>
+        </div>
+    {% else %}
+        <div class="alert alert-success">
+            <h4>Вы авторизованы как {{ current_user.username }}!</h4>
+        </div>
+    {% endif %}
+{% endblock %}

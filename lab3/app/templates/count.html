@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Лабораторная работа №3</h1>
+    {% if count_visits == 0%}
+        <p>Вы не посещали страницу прежде</p>
+    {% else %}
+        <p>Вы посещаете страницу {{count_visits}} раз</p>
+    {% endif %}
+{% endblock %}
