@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Отчет по посещениям</h1>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Пользователь</th>
+                <th>Страница</th>
+                <th>Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in pagination.items %}
+            <tr>
+                {# Вычисляем сквозной номер с учетом страницы #}
+                <td>{{ (pagination.page - 1) * pagination.per_page + loop.index }}</td>
+                <td>{{ report.user.fio if report.user else 'Неаутентифицированный пользователь' }}</td>
+                <td>{{ report.path }}</td>
+                <td>{{ report.created_at.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center">Записей пока нет</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('report', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}
