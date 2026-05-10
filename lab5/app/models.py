@@ -1,10 +1,9 @@
+from core import Base
 from typing import Optional
 from datetime import datetime
 from sqlalchemy import String, ForeignKey, DateTime, Text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-class Base(DeclarativeBase):
-    pass
 
 class Role(Base):
     __tablename__ = "roles"

@@ -18,13 +18,13 @@
                     <td>{{ user.fio }}</td>
                     <td>{{ user.role.name if user.role else 'Нет роли' }}</td>
                     <td>
-                        {% if user.id == current_user.id or current_user.role_id == 1 %}
+                        {% if user.id == current_user.id or (current_user.role and current_user.role.name == "Администратор") %}
                             
                             <a href="{{ url_for('user_detail', id=user.id) }}" class="btn btn-outline-info btn-sm">Просмотр</a>
                             <a href="{{ url_for('user_update', id=user.id) }}" class="btn btn-outline-warning btn-sm">Редактирование</a>
                             {% if current_user.role.name == "Администратор" %}
                                 <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user.id }}">Удалить</button>
-                            {% endif %}
+                                {% endif %}
                             <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">

@@ -1,7 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
+<body>
+    <div class="container mt-5">
+        <nav class="mb-4">
+        {% if current_user.role and current_user.role.name == "Администратор" %}
+            <a href="/report/users" class="btn btn-outline-secondary">Отчет по пользователям</a>
+            <a href="/report/pages" class="btn btn-outline-secondary">Отчет по страницам</a>
+        {% endif %}
+        </nav>
+    </div>    
     <h1>Отчет по посещениям</h1>
-    
     <table class="table table-striped">
         <thead>
             <tr>
@@ -33,7 +41,7 @@
             {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
                 {% if page_num %}
                     <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('report', page=page_num) }}">{{ page_num }}</a>
+                        <a class="page-link" href="{{ url_for('report.index', page=page_num) }}">{{ page_num }}</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled"><span class="page-link">...</span></li>

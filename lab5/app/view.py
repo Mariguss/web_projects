@@ -1,16 +1,20 @@
+from core import db
+from auth import check_rights
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
-from models import Base, User, Role
+from models import Base, User, Role, VisitLogs
+
+from report import report_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret_12345'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 
-db = SQLAlchemy(model_class=Base)
 db.init_app(app)
+
+app.register_blueprint(report_bp)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -43,28 +47,6 @@ with app.app_context():
     # 3. Один финальный коммит для всего
     db.session.commit()
     print("База проверена и готова.")
-
-from functools import wraps
-def check_rights(func):
-    
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        
-        # Если юзер аноним — выгоняем
-        if not current_user.is_authenticated:
-            return redirect(url_for('login'))
-        
-        # ЛОГИКА ПРАВ:
-        # Разрешаем, если это Администратор
-        is_admin = current_user.role and current_user.role.name == "Администратор"
-        
-        if is_admin:
-            return func(*args, **kwargs) # Пропускаем дальше
-        
-        # 4. Если не админ и не владелец — ошибка доступа
-        flash("У вас недостаточно прав для доступа к данной странице.", "warning")
-        return redirect(url_for("index"))
-    return wrapper
 
 from sqlalchemy import func
 
@@ -275,21 +257,6 @@ def change_password():
             return redirect(url_for("index"))
             
     return render_template("password.html", errors=errors)
-
-
-@app.route("/report")
-@login_required
-def report():
-    page = request.args.get('page', 1, type=int)
-    per_page = 10
-    query = db.select(VisitLogs).order_by(VisitLogs.created_at.desc())
-    
-    if current_user.role.name != "Администратор":
-        query = query.where(VisitLogs.user_id == current_user.id)
-    
-    pagination = db.paginate(query, page=page, per_page=per_page, error_out=False)
-    
-    return render_template("report.html", pagination=pagination)
 
 
 if __name__ == "__main__":

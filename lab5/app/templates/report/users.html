@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Отчет по пользователям</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Пользователь</th>
+                <th>Количество посещений</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user, visit_count in query %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ user if user else "Неавторизованный пользователь" }}</td>
+                <td>{{ visit_count }}</td> 
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center">Записей пока нет</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
