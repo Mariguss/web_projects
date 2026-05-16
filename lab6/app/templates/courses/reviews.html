@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% import 'pagination.html' as pagination %}
+<div class="container mt-5">
+    <h2 class="mb-3 text-center text-uppercase font-weight-bold">Отзывы о курсе</h2>
+    
+    <!-- Форма добавления отзыва -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>Оставить отзыв</h4>
+            
+            {% if current_user.is_authenticated %}
+                {% if user_review %}
+                    <div class="alert alert-info">
+                        <strong>Ваш отзыв:</strong>
+                        <p class="mt-2">{{ user_review.text }}</p>
+                        <p>Оценка: {{ '★' * user_review.rating }}{{ '☆' * (5-user_review.rating) }} ({{ user_review.rating }}/5)</p>
+                    </div>
+                {% else %}
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Оценка</label>
+                            <select name="rating" class="form-select">
+                                <option value="5">5 — Отлично</option>
+                                <option value="4">4 — Хорошо</option>
+                                <option value="3">3 — Удовлетворительно</option>
+                                <option value="2">2 — Неудовлетворительно</option>
+                                <option value="1">1 — Плохо</option>
+                                <option value="0">0 — Ужасно</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Текст отзыва</label>
+                            <textarea name="text" class="form-control" rows="5" 
+                                      placeholder="Поделитесь своим мнением..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-warning">
+                    <a href="{{ url_for('auth.login') }}">Войдите в аккаунт</a>, чтобы оставить отзыв
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Фильтр сортировки -->
+    <div class="mb-4 d-flex justify-content-end">
+        <form method="get" class="d-flex gap-2">
+            <select name="sort" class="form-select w-auto">
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Сначала новые</option>
+                <option value="positive" {% if sort == 'positive' %}selected{% endif %}>Сначала положительные</option>
+                <option value="negative" {% if sort == 'negative' %}selected{% endif %}>Сначала отрицательные</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Применить</button>
+        </form>
+    </div>
+
+    <!-- Список отзывов -->
+    {% for item in paginated_reviews.items %}
+        {% set review = item[0] if item is iterable and not item.__class__.__name__ == 'Review' else item %}
+        {% set user = item[1] if item is iterable and not item.__class__.__name__ == 'Review' else item.user %}
+        
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle me-3 bg-primary d-flex align-items-center justify-content-center text-white" 
+                        style="width: 50px; height: 50px; font-weight: bold; font-size: 18px;">
+                        {% if user.first_name %}
+                            {{ user.first_name[0] }}{{ user.last_name[0] if user.last_name else '' }}
+                        {% else %}
+                            {{ user.login[0]|upper }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h5 class="mb-0">{{ user.full_name or user.login }}</h5>
+                        <small class="text-muted">{{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    </div>
+                </div>
+                <p class="text-muted">
+                    Оценка: 
+                    <span class="text-warning">
+                        {% for i in range(review.rating) %}★{% endfor %}
+                        {% for i in range(5 - review.rating) %}☆{% endfor %}
+                    </span>
+                    <span>({{ review.rating }}/5)</span>
+                </p>
+                <p class="card-text">{{ review.text }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+    {{ pagination.render_pagination(paginated_reviews, 'courses.reviews', params={'sort': sort, 'course_id': course.id}) }}
+</div>
+{% endblock %}
