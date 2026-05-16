@@ -34,7 +34,7 @@ def pages():
 
     return render_template("report/pages.html", query=query)
 
-from models import User  # Убедись, что модель User импортирована
+from models import User
 
 @report_bp.route("/users")
 @login_required
